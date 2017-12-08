@@ -1,4 +1,4 @@
-#Day 5: A Maze of Twisty Trampolines, All Alike
+# Day 5: A Maze of Twisty Trampolines, All Alike
 
 An urgent interrupt arrives from the CPU: it's trapped in a maze of jump instructions, and it would like assistance from any programs with spare cycles to help find the exit.
 
@@ -27,7 +27,7 @@ How many steps does it take to reach the exit?
 
 >Your puzzle answer was 358309.
 
-###Part Two
+### Part Two
 
 Now, the jumps are even stranger: after each jump, if the offset was three or more, instead decrease it by 1. Otherwise, increase it by 1 as before.
 

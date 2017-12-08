@@ -1,4 +1,4 @@
-#Day 7: Recursive Circus
+# Day 7: Recursive Circus
 
 Wandering further through the circuits of the computer, you come upon a tower of programs that have gotten themselves into a bit of trouble. A recursive algorithm has gotten out of hand, and now they're balanced precariously in a large tower.
 
@@ -46,7 +46,7 @@ Before you're ready to help them, you need to make sure your information is corr
 
 >Your puzzle answer was rqwgj.
 
-###Part Two
+### Part Two
 
 The programs explain the situation: they can't get down. Rather, they could get down, if they weren't expending all of their energy trying to keep the tower balanced. Apparently, one program has the wrong weight, and until it's fixed, they're stuck here.
 
