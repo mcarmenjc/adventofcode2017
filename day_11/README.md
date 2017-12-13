@@ -34,3 +34,6 @@ se,sw,se,sw,sw is 3 steps away (s,s,sw).
 How many steps away is the furthest he ever got from his starting position?
 
 > Your puzzle answer was 1544.
+
+### Links
+[Hexagonal Grids](https://www.redblobgames.com/grids/hexagons/#distances)
