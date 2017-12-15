@@ -1,10 +1,8 @@
 #include <iostream>
 #include <string>
 #include <fstream>
-#include <sstream>
 #include <vector>
 #include <unordered_map>
-#include <unordered_set>
 #include <climits>
 
 using namespace std;
@@ -46,7 +44,6 @@ void UpdateState(std::unordered_map<int, std::pair<int, int> > & state, std::uno
     }
 }
 
-
 int CalculateSeverity(std::unordered_map<int, int> & firewall){
     int firewall_length = GetMaxLayer(firewall);
     int severity = 0;
@@ -63,6 +60,32 @@ int CalculateSeverity(std::unordered_map<int, int> & firewall){
     return severity;
 }
 
+int CalculateMinWaitToCrossTheFirewall(std::unordered_map<int, int> & firewall){
+    int firewall_length = GetMaxLayer(firewall);
+    int wait = 0;
+    int pos = 0;
+    std::unordered_map<int, std::pair<int, int> > state;
+    std::unordered_map<int, std::pair<int, int> > wait_state;
+    for (const auto & pair : firewall){
+        state.insert(std::make_pair(pair.first, std::make_pair(1, 1)));
+        wait_state.insert(std::make_pair(pair.first, std::make_pair(1, 1)));
+    }
+    while (pos <= firewall_length){
+        if (firewall.count(pos) > 0 && state[pos].first == 1){
+            ++wait;
+            pos = 0;
+            UpdateState(wait_state, firewall);
+            state = wait_state;
+            //std::cout << "wait = " << wait << std::endl;
+        }
+        else{
+            UpdateState(state, firewall);
+            ++pos;
+        }
+    }
+    return wait;
+}
+
 int main(int argc, char **argv){
     if (argc != 2){
         std::cout << "Use of the program is: \n\t day_13 <filename>\n" << std::endl;
@@ -72,4 +95,6 @@ int main(int argc, char **argv){
     std::unordered_map<int, int> firewall = ReadFirewall(filename);
     int severity = CalculateSeverity(firewall);
     std::cout << "severity = " << severity << std::endl;
+    int min_wait = CalculateMinWaitToCrossTheFirewall(firewall);
+    std::cout << "min wait = " << min_wait << std::endl;
 }
