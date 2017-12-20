@@ -103,6 +103,7 @@ int GetFirstRecoveredValue(const std::vector<Instruction> &instructions){
 
 int ExecuteCommand(std::unordered_map<char, long> &reg_values, const Instruction &instruction, std::deque<int> &prod, std::deque<int> &cons){
     long operand = GetOperandValue(reg_values, instruction);
+    std::cout << instruction.command << "\t" << instruction.reg << "\t" << instruction.reg_op << "\t" << operand << std::endl;
     if (instruction.command == "set"){
         if (reg_values.count(instruction.reg) == 0){
             reg_values.insert(std::make_pair(instruction.reg, operand));
@@ -152,9 +153,11 @@ int GetNumberOfSentRegisterByProgOne(const std::vector<Instruction> &instruction
         step0 = 0;
         step1 = 0;
         if (prog0 < instructions.size()){
+            std::cout << "PROG 0" << std::endl;
             step0 = ExecuteCommand(reg_values_prog0, instructions[prog0], queue_prog0, queue_prog1);
         }
         if (prog1 < instructions.size()){
+            std::cout << "PROG 1" << std::endl;
             if (instructions[prog1].command == "snd"){
                 ++prog1_sends;
             }
@@ -165,7 +168,7 @@ int GetNumberOfSentRegisterByProgOne(const std::vector<Instruction> &instruction
     }
 
     return prog1_sends;
-}
+} 
 
 int main(int argc, char **argv){
     if (argc != 2){
