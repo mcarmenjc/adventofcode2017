@@ -10,8 +10,8 @@ using namespace std;
 
 struct Instruction {
     std::string command;
-    char reg;
-    std::string reg_op;
+    std::string op1;
+    std::string op2;
 };
 
 std::vector<Instruction> ReadInstructionFile(std::string filename){
@@ -22,16 +22,16 @@ std::vector<Instruction> ReadInstructionFile(std::string filename){
         std::stringstream ss(line);
         Instruction what_to_do;
         ss >> what_to_do.command;
-        ss >> what_to_do.reg;
+        ss >> what_to_do.op1;
         if (what_to_do.command == "set" || 
             what_to_do.command == "add" || 
             what_to_do.command == "mul" || 
             what_to_do.command == "mod" || 
             what_to_do.command == "jgz"){
-            ss >> what_to_do.reg_op;
+            ss >> what_to_do.op2;
         }
         else {
-            what_to_do.reg_op = "0";
+            what_to_do.op2 = "0";
         }
         instructions.push_back(what_to_do);
     }
@@ -39,16 +39,19 @@ std::vector<Instruction> ReadInstructionFile(std::string filename){
     return instructions;
 }
 
-long GetOperandValue(const std::unordered_map<char, long> register_sounds, const Instruction & instruction){
+long GetOperandValue(const std::unordered_map<char, long> register_sounds, const std::string &soperand){
     long operand = 0;
-        if (instruction.reg_op[0] >= 'a' && instruction.reg_op[0] <= 'z'){
-            operand = register_sounds.at(instruction.reg_op[0]); 
+    if (soperand[0] >= 'a' && soperand[0] <= 'z'){
+        if (register_sounds.count(soperand[0]) == 0){
+            return 0;
         }
-        else {
-            operand = stoi(instruction.reg_op);
-        }
+        operand = register_sounds.at(soperand[0]); 
+    }
+    else {
+        operand = stoi(soperand);
+    }
 
-        return operand;
+    return operand;
 }
 
 int GetFirstRecoveredValue(const std::vector<Instruction> &instructions){
@@ -56,29 +59,30 @@ int GetFirstRecoveredValue(const std::vector<Instruction> &instructions){
     std::unordered_map<char, long> previous_sounds;
     int i = 0;
     while (i < instructions.size()){
-        long operand = GetOperandValue(register_sounds, instructions[i]);
+        long operand = GetOperandValue(register_sounds, instructions[i].op2);
         if (instructions[i].command == "set"){
-            if (register_sounds.count(instructions[i].reg) == 0){
-                register_sounds.insert(std::make_pair(instructions[i].reg, operand));
-                previous_sounds.insert(std::make_pair(instructions[i].reg, 0));
+            if (register_sounds.count(instructions[i].op1[0]) == 0){
+                register_sounds.insert(std::make_pair(instructions[i].op1[0], operand));
+                previous_sounds.insert(std::make_pair(instructions[i].op1[0], 0));
             }
-            register_sounds[instructions[i].reg] = operand;
+            register_sounds[instructions[i].op1[0]] = operand;
             ++i ;
         }
         else if (instructions[i].command == "add") {
-            register_sounds[instructions[i].reg] += operand;
+            register_sounds[instructions[i].op1[0]] += operand;
             ++i ;
         }
         else if (instructions[i].command == "mul") {
-            register_sounds[instructions[i].reg] *= operand;
+            register_sounds[instructions[i].op1[0]] *= operand;
             ++i ;
         }
         else if (instructions[i].command == "mod") {
-            register_sounds[instructions[i].reg] %= operand;
+            register_sounds[instructions[i].op1[0]] %= operand;
             ++i ;
         }
         else if (instructions[i].command == "jgz") {
-            if (register_sounds[instructions[i].reg] > 0){
+            int first_op = GetOperandValue(register_sounds, instructions[i].op1);
+            if (first_op > 0){
                 i += operand;
             }
             else {
@@ -86,14 +90,14 @@ int GetFirstRecoveredValue(const std::vector<Instruction> &instructions){
             }
         }
         else if (instructions[i].command == "rcv") {
-            if (register_sounds[instructions[i].reg] > 0 && previous_sounds[instructions[i].reg] > 0){
-                register_sounds[instructions[i].reg] = previous_sounds[instructions[i].reg];
-                return previous_sounds[instructions[i].reg];
+            if (register_sounds[instructions[i].op1[0]] > 0 && previous_sounds[instructions[i].op1[0]] > 0){
+                register_sounds[instructions[i].op1[0]] = previous_sounds[instructions[i].op1[0]];
+                return previous_sounds[instructions[i].op1[0]];
             }
             ++i;
         }
         else if (instructions[i].command == "snd") {
-            previous_sounds[instructions[i].reg] = register_sounds[instructions[i].reg];
+            previous_sounds[instructions[i].op1[0]] = register_sounds[instructions[i].op1[0]];
             ++i;
         }
     }
@@ -101,26 +105,26 @@ int GetFirstRecoveredValue(const std::vector<Instruction> &instructions){
     return 0;
 }
 
-int ExecuteCommand(std::unordered_map<char, long> &reg_values, const Instruction &instruction, std::deque<int> &prod, std::deque<int> &cons){
-    long operand = GetOperandValue(reg_values, instruction);
-    std::cout << instruction.command << "\t" << instruction.reg << "\t" << instruction.reg_op << "\t" << operand << std::endl;
+int ExecuteCommand(std::unordered_map<char, long> &reg_values, const Instruction &instruction, std::deque<int> &prod, std::deque<int> &cons, int &num_snd){
+    long operand = GetOperandValue(reg_values, instruction.op2);
+    long first_op = GetOperandValue(reg_values, instruction.op1);
     if (instruction.command == "set"){
-        if (reg_values.count(instruction.reg) == 0){
-            reg_values.insert(std::make_pair(instruction.reg, operand));
+        if (reg_values.count(instruction.op1[0]) == 0){
+            reg_values.insert(std::make_pair(instruction.op1[0], operand));
         }
-        reg_values[instruction.reg] = operand;
+        reg_values[instruction.op1[0]] = operand;
     }
     else if (instruction.command == "add") {
-        reg_values[instruction.reg] += operand;
+        reg_values[instruction.op1[0]] += operand;
     }
     else if (instruction.command == "mul") {
-        reg_values[instruction.reg] *= operand;
+        reg_values[instruction.op1[0]] *= operand;
     }
     else if (instruction.command == "mod") {
-        reg_values[instruction.reg] %= operand;
+        reg_values[instruction.op1[0]] %= operand;
     }
     else if (instruction.command == "jgz") {
-        if (reg_values[instruction.reg] > 0){
+        if (first_op > 0){
             return operand;
         }
     }
@@ -129,19 +133,24 @@ int ExecuteCommand(std::unordered_map<char, long> &reg_values, const Instruction
             return 0;
         }
         else{
-            reg_values[instruction.reg] = cons.front();
+            reg_values[instruction.op1[0]] = cons.front();
             cons.pop_front();
         }
     }
     else if (instruction.command == "snd") {
-        prod.push_back(operand);
+        if (first_op > 0){
+            prod.push_back(first_op);
+            ++num_snd;
+        }
     }
     return 1;
 }
 
 int GetNumberOfSentRegisterByProgOne(const std::vector<Instruction> &instructions){
     std::unordered_map<char, long> reg_values_prog0;
+    reg_values_prog0.insert(std::make_pair('p', 0));
     std::unordered_map<char, long> reg_values_prog1;
+    reg_values_prog1.insert(std::make_pair('p', 1));
     std::deque<int> queue_prog0;
     std::deque<int> queue_prog1;
     int prog0 = 0;
@@ -149,19 +158,15 @@ int GetNumberOfSentRegisterByProgOne(const std::vector<Instruction> &instruction
     int step0 = 1;
     int step1 = 1;
     int prog1_sends = 0;
-    while (prog0 < instructions.size() && prog1 < instructions.size() && step0 != 0 && step1 != 0){
+    int prog0_sends = 0;
+    while (prog0 < instructions.size() && prog1 < instructions.size() && (step0 != 0 || step1 != 0)){
         step0 = 0;
         step1 = 0;
         if (prog0 < instructions.size()){
-            std::cout << "PROG 0" << std::endl;
-            step0 = ExecuteCommand(reg_values_prog0, instructions[prog0], queue_prog0, queue_prog1);
+            step0 = ExecuteCommand(reg_values_prog0, instructions[prog0], queue_prog0, queue_prog1, prog0_sends);
         }
         if (prog1 < instructions.size()){
-            std::cout << "PROG 1" << std::endl;
-            if (instructions[prog1].command == "snd"){
-                ++prog1_sends;
-            }
-            step1 = ExecuteCommand(reg_values_prog1, instructions[prog1], queue_prog1, queue_prog0);
+            step1 = ExecuteCommand(reg_values_prog1, instructions[prog1], queue_prog1, queue_prog0, prog1_sends);
         }
         prog0 += step0;
         prog1 += step1;
