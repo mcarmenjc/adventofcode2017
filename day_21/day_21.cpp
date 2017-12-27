@@ -173,8 +173,9 @@ int main(int argc, char **argv){
     state = CreateFractal(state, rules, 5);
     //PrintState(state);
     std::cout << "Number of hashes in state after 5 iterations = " << CountNumHashes(state) << std::endl;
+
+    state = {".#.", "..#", "###"};
     state = CreateFractal(state, rules, 18);
     //PrintState(state);
-    std::cout << "num rows = " << state.size() << std::endl;
     std::cout << "Number of hashes in state after 18 iterations = " << CountNumHashes(state) << std::endl;
 }
