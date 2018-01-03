@@ -73,12 +73,11 @@ int GetNumStepsFromRepeatedCycle(std::vector<int> &cycle){
 }
 
 int main(int argc, char **argv){
-    if (argc != 3){
-        std::cout << "Use of the program is: \n\t day_6 <option 1 or 2> <filename>\n" << std::endl;
-        return;
+    if (argc != 2){
+        std::cout << "Use of the program is: \n\t day_6 <filename>\n" << std::endl;
+        return 0;
     }
-    int option = std::stoi(argv[1]);
-    std::string filename = argv[2];
+    std::string filename = argv[1];
 
     std::ifstream file (filename);
     std::vector<int> initial_state;
@@ -88,13 +87,9 @@ int main(int argc, char **argv){
     }
     file.close();
 
-    int steps_to_cycle = 0;
-    if (option == 1){
-        steps_to_cycle = GetNumStepsUntilFirstRepeatedCycle(initial_state);
-    }
-    else{
-        steps_to_cycle = GetNumStepsFromRepeatedCycle(initial_state);
-    }
+    int steps_to_cycle = GetNumStepsUntilFirstRepeatedCycle(initial_state);
+    int num_steps_in_cycle = GetNumStepsFromRepeatedCycle(initial_state);
     
-    std::cout << steps_to_cycle << std::endl;
+    std::cout << "Num steps to first cycle = " << steps_to_cycle << std::endl;
+    std::cout << "Num steps inside cycle = " << num_steps_in_cycle << std::endl;
 }

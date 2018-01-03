@@ -42,16 +42,16 @@ int GetDiffBetweenLargestAndSmallest(const std::vector<int> & row){
 }
 
 int main(int argc, char **argv){
-    if (argc != 3){
-        std::cout << "Use of the program is: \n\t day_2 <option 1 or 2> <filename>\n" << std::endl;
-        return;
+    if (argc != 2){
+        std::cout << "Use of the program is: \n\t day_2 <filename>\n" << std::endl;
+        return 0;
     }
-    int option = std::stoi(argv[1]);
-    std::string filename = argv[2];
+    std::string filename = argv[1];
 
     std::ifstream file (filename);
     std::string line;
-    int sum = 0;
+    int sum_diff_largest_smallest = 0;
+    int sum_for_divisors = 0;
     while (std::getline(file, line)){
         std::stringstream ss(line);
         std::vector<int> row;
@@ -60,13 +60,10 @@ int main(int argc, char **argv){
             row.push_back(std::stoi(number));
         }
 
-        if (option == 1){
-            sum += GetDiffBetweenLargestAndSmallest(row);
-        }
-        else {
-            sum += GetDiffBetweenDivisors(row);
-        }
+        sum_diff_largest_smallest += GetDiffBetweenLargestAndSmallest(row);
+        sum_for_divisors += GetDiffBetweenDivisors(row);
     }
     file.close();
-    std::cout << sum << std::endl;
+    std::cout << "Sum of the difference between the largest and smallest = " << sum_diff_largest_smallest << std::endl;
+    std::cout << "Sum of the difference between the divisors = " << sum_for_divisors << std::endl;
 }

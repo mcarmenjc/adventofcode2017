@@ -106,18 +106,13 @@ int GetNextNumber(int number){
 }
 
 int main(int argc, char** argv){
-    if (argc < 3){
-        std::cout << "Use of the program is: \n\t day_3 <option 1 or 2> <captcha>\n" << std::endl;
-        return;
+    if (argc != 2){
+        std::cout << "Use of the program is: \n\t day_3 <captcha>\n" << std::endl;
+        return 0;
     }
-    int option = stoi(argv[1]);
-    int number = stoi(argv[2]);
-    int distance = 0;
-    if (option == 1){
-        distance = GetDistanceToCenter(number);
-    }
-    else {
-        distance = GetNextNumber(number);
-    }
-    std::cout << distance << std::endl;
+    int number = stoi(argv[1]);
+    int distance_to_center = GetDistanceToCenter(number);
+    int sum_of_neighbours = GetNextNumber(number);
+    std::cout << "Distance to center = " << distance_to_center << std::endl;
+    std::cout << "Sum of neighbours = " << sum_of_neighbours << std::endl;
 }

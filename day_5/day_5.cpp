@@ -40,12 +40,11 @@ int GetStepsToExitIncAndDecAfterJump(std::vector<int> &jumps){
 }
 
 int main(int argc, char **argv){
-    if (argc != 3){
-        std::cout << "Use of the program is: \n\t day_5 <option 1 or 2> <filename>\n" << std::endl;
-        return;
+    if (argc != 2){
+        std::cout << "Use of the program is: \n\t day_5 <filename>\n" << std::endl;
+        return 0;
     }
-    int option = std::stoi(argv[1]);
-    std::string filename = argv[2];
+    std::string filename = argv[1];
 
     std::ifstream file (filename);
     std::vector<int> jumps;
@@ -55,12 +54,8 @@ int main(int argc, char **argv){
     }
     file.close();
 
-    int steps_to_exit = 0;
-    if (option == 1){
-        steps_to_exit = GetStepsToExit(jumps);
-    }
-    else{
-        steps_to_exit = GetStepsToExitIncAndDecAfterJump(jumps);
-    }
-    std::cout << steps_to_exit << std::endl;
+    int steps_to_exit = GetStepsToExit(jumps);
+    int steps_to_exit_with_dec = GetStepsToExitIncAndDecAfterJump(jumps);
+    std::cout << "Steps to exit = " << steps_to_exit << std::endl;
+    std::cout << "Steps to exit jumping forward and backwards = " << steps_to_exit_with_dec << std::endl;
 }

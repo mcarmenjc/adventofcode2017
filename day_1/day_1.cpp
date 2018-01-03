@@ -34,18 +34,13 @@ int GetSumOfEqualHalfwayRoundDigits(std::string captcha){
 }
 
 int main(int argc, char** argv){
-    if (argc < 3){
-        std::cout << "Use of the program is: \n\t day_1 <option 1 or 2> <captcha>\n" << std::endl;
-        return;
+    if (argc < 2){
+        std::cout << "Use of the program is: \n\t day_1 <captcha>\n" << std::endl;
+        return 0;
     }
-    int option = CharToInt(argv[1][0]);
-    string captcha = argv[2];
-    int captcha_sum = 0;
-    if (option == 1){
-        captcha_sum = GetSumOfEqualConsecutiveDigits(captcha);
-    }
-    else {
-        captcha_sum = GetSumOfEqualHalfwayRoundDigits(captcha);
-    }
-    std::cout << captcha_sum << std::endl;
+    string captcha = argv[1];
+    int consecutive_captcha = GetSumOfEqualConsecutiveDigits(captcha);
+    int halfway_captcha = GetSumOfEqualHalfwayRoundDigits(captcha);
+    std::cout << "Captcha for consecutive digits = " << consecutive_captcha << std::endl;
+    std::cout << "Captcha doing halfway round = " << halfway_captcha << std::endl;
 }

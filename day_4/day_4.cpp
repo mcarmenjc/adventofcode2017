@@ -39,28 +39,25 @@ bool IsAValidPassphraseWithNoAnagrams(std::string passphrase){
 }
 
 int main(int argc, char **argv){
-    if (argc != 3){
-        std::cout << "Use of the program is: \n\t day_4 <option 1 or 2> <filename>\n" << std::endl;
-        return;
+    if (argc != 2){
+        std::cout << "Use of the program is: \n\t day_4 <filename>\n" << std::endl;
+        return 0;
     }
-    int option = std::stoi(argv[1]);
-    std::string filename = argv[2];
+    std::string filename = argv[1];
 
     std::ifstream file (filename);
     std::string line;
     int num_valid_passphrases = 0;
+    int num_valid_passphrases_no_anagrams = 0;
     while (std::getline(file, line)){
-        if (option == 1){
-            if (IsAValidPassphrase(line)){
-                ++num_valid_passphrases;
-            }
+        if (IsAValidPassphrase(line)){
+            ++num_valid_passphrases;
         }
-        else{
-            if (IsAValidPassphraseWithNoAnagrams(line)){
-                ++num_valid_passphrases;
-            }
+        if (IsAValidPassphraseWithNoAnagrams(line)){
+            ++num_valid_passphrases_no_anagrams;
         }
     }
     file.close();
-    std::cout << num_valid_passphrases << std::endl;
+    std::cout << "Num valid passphrases = " << num_valid_passphrases << std::endl;
+    std::cout << "Num valid passphrases with no anagrams = " << num_valid_passphrases_no_anagrams << std::endl;
 }
