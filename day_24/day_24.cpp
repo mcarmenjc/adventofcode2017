@@ -29,50 +29,6 @@ std::unordered_map<int, std::unordered_set<int> > ReadComponentsPorts(std::strin
     return components;
 }
 
-int GetStrongestBridgeFrom(int port, const std::unordered_map<int, std::unordered_set<int> > &ports, std::unordered_map<std::string, bool> &visited){
-    int max_strength = INT_MIN;
-    if (ports.count(port) == 0){
-        return 0;
-    }
-
-    for (int port2 : ports.at(port)){
-        int bridge_strength = 0;
-        std::string component = port < port2 ? std::to_string(port) + "/" + std::to_string(port2) : std::to_string(port2) + "/" + std::to_string(port);
-        if (!visited[component]){
-            visited[component] = true;
-            bridge_strength = port + port2 + GetStrongestBridgeFrom(port2, ports, visited);
-            visited[component] = false;
-        }
-        if (bridge_strength > max_strength){
-            max_strength = bridge_strength;
-        }
-    }
-    return max_strength;
-}
-
-int GetStrongestBridge(const std::unordered_map<int, std::unordered_set<int> > &ports){
-    int max = INT_MIN;
-    std::unordered_map<std::string, bool> visited;
-    for (const pair<int, std::unordered_set<int> > &c : ports){
-        for (int p : c.second){
-            std::string port = c.first < p ? std::to_string(c.first) + "/" + std::to_string(p) : std::to_string(p) + "/" + std::to_string(c.first);
-            if (visited.count(port) == 0){
-                visited.insert(std::make_pair(port, false));
-            }
-        }
-    }
-    
-    for (int port : ports.at(0)){
-        visited["0/"+std::to_string(port)] = true;
-        int bridge_strength = port + GetStrongestBridgeFrom(port, ports, visited);
-        if (bridge_strength > max){
-            max = bridge_strength;
-        }
-    }
-
-    return max;
-}
-
 void GetStrongestForLengthBridgeFrom(int port, int length, int strength, const std::unordered_map<int, std::unordered_set<int> > &ports, std::unordered_map<std::string, bool> &visited, std::unordered_map<int, int> &strength_for_length){
     if (ports.count(port) == 0){
         return;
@@ -96,7 +52,7 @@ void GetStrongestForLengthBridgeFrom(int port, int length, int strength, const s
     }
 }
 
-int GetLongestStrongestBridge(const std::unordered_map<int, std::unordered_set<int> > &ports){
+std::unordered_map<int, int> GetStrongestBridges(const std::unordered_map<int, std::unordered_set<int> > &ports){
     std::unordered_map<std::string, bool> visited;
     std::unordered_map<int, int> strongest_for_length;
     for (const pair<int, std::unordered_set<int> > &c : ports){
@@ -120,16 +76,31 @@ int GetLongestStrongestBridge(const std::unordered_map<int, std::unordered_set<i
         visited["0/"+std::to_string(port)] = false;
     }
 
-    int max = INT_MIN;
-    int length = INT_MIN;
-    for (const pair<int, int> &p : strongest_for_length){
-        if (length < p.first){
-            length = p.first;
-            max = p.second;
+    return strongest_for_length;
+}
+
+int GetStrongestBridge(const std::unordered_map<int, int> &strongest_for_length){
+    int strongest = INT_MIN;
+    for (const std::pair<int, int> &b : strongest_for_length){
+        if (b.second > strongest){
+            strongest = b.second;
         }
     }
 
-    return max;
+    return strongest;
+}
+
+int GetLongestStrongestBridge(const std::unordered_map<int, int> &strongest_for_length){
+    int longest = INT_MIN;
+    int strength = 0;
+    for (const std::pair<int, int> &b : strongest_for_length){
+        if (b.first > longest){
+            longest = b.first;
+            strength = b.second;
+        }
+    }
+
+    return strength;
 }
 
 int main(int argc, char **argv){
@@ -139,8 +110,9 @@ int main(int argc, char **argv){
     }
     std::string filename = argv[1];
     std::unordered_map<int, std::unordered_set<int> > ports = ReadComponentsPorts(filename);
-    int strongest_bridge = GetStrongestBridge(ports);
+    std::unordered_map<int, int> strongest_for_length = GetStrongestBridges(ports);
+    int strongest_bridge = GetStrongestBridge(strongest_for_length);
     std::cout << "Strongest bridge = " << strongest_bridge << std::endl;
-    int strongest_longest_bridge = GetLongestStrongestBridge(ports);
+    int strongest_longest_bridge = GetLongestStrongestBridge(strongest_for_length);
     std::cout << "Strongest longest bridge = " << strongest_longest_bridge << std::endl;
 }
