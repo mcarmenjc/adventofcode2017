@@ -2,7 +2,7 @@
 
 This year instead of eating a chocolate per day till Christmas, just solve a small programming problem each day :).
 
-[Link to Advent of Code 2017](http://adventofcode.com/2017 "adventofcode.com")
+[Advent of Code 2017](http://adventofcode.com/2017 "adventofcode.com")
 
 ```
 |O|        Naughty      |        Nice         |O|
